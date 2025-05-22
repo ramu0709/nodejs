@@ -2,13 +2,13 @@ pipeline {
   agent any
 
   tools {
+    jdk 'jdk17'
     nodejs 'nodejs24.1.0'
-    jdk 'java-17-openjdk'   // Use the JDK tool configured in Jenkins
   }
 
   environment {
-    PATH = "${tool 'nodejs24.1.0'}/bin:${tool 'java-17-openjdk'}/bin:${env.PATH}"
-    JAVA_HOME = "${tool 'java-17-openjdk'}"
+    PATH = "${tool 'nodejs24.1.0'}/bin:${tool 'jdk17'}/bin:${env.PATH}"
+    JAVA_HOME = "${tool 'jdk17'}"
   }
 
   stages {
@@ -17,41 +17,25 @@ pipeline {
         git branch: 'main', credentialsId: '9c54f3a6-d28e-4f8f-97a3-c8e939dcc8ff', url: 'https://github.com/ramu0709/nodejs.git'
       }
     }
-
     stage("Build") {
       steps {
         sh 'npm install'
       }
     }
-
-    stage('SonarQube Analysis') {
+    stage("SonarQube Scan") {
       steps {
-        withSonarQubeEnv('MySonarQubeServer') {
-          sh 'sonar-scanner'
-        }
+        sh 'npm run sonar'
       }
     }
-
-    stage('Publish to Nexus') {
+    stage("Publish to Nexus") {
       steps {
         sh 'npm publish'
       }
     }
-
-    stage('Run Node.js App') {
+    stage("Run NodeJS App") {
       steps {
         sh 'npm start &'
       }
-    }
-  }
-
-  post {
-    always {
-      echo 'Cleaning workspace...'
-      cleanWs()
-    }
-    failure {
-      echo 'Build failed!'
     }
   }
 }
