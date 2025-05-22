@@ -1,0 +1,45 @@
+node {
+  stage("CheckOutCodeGit") {
+    git branch: 'main', credentialsId: '9c54f3a6-d28e-4f8f-97a3-c8e939dcc8ff', url: 'https://github.com/ramu0709/nodejs.git'
+  }
+
+  stage("Build") {
+    tools {
+      jdk 'jdk17'
+      nodejs 'nodejs24.1.0'
+    }
+    nodejs(nodeJSInstallationName: 'nodejs24.1.0') {
+      sh 'npm install'
+    }
+  }
+
+  stage('ExecuteSonarQubeReport') {
+    tools {
+      jdk 'jdk17'
+      nodejs 'nodejs24.1.0'
+    }
+    nodejs(nodeJSInstallationName: 'nodejs24.1.0') {
+      sh 'npm run sonar'
+    }
+  }
+
+  stage('UploadintoNexus') {
+    tools {
+      jdk 'jdk17'
+      nodejs 'nodejs24.1.0'
+    }
+    nodejs(nodeJSInstallationName: 'nodejs24.1.0') {
+      sh 'npm publish'
+    }
+  }
+
+  stage('RunNodeJsApp') {
+    tools {
+      jdk 'jdk17'
+      nodejs 'nodejs24.1.0'
+    }
+    nodejs(nodeJSInstallationName: 'nodejs24.1.0') {
+      sh 'npm start &'
+    }
+  }
+}
