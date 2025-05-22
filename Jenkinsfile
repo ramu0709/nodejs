@@ -4,42 +4,37 @@ node {
   }
 
   stage("Build") {
-    tools {
-      jdk 'jdk17'
-      nodejs 'nodejs24.1.0'
-    }
-    nodejs(nodeJSInstallationName: 'nodejs24.1.0') {
-      sh 'npm install'
-    }
+    // Setup JDK and NodeJS paths manually
+    def jdkHome = tool 'jdk17'          // jdk17 is the name configured in Jenkins Global Tools
+    def nodeHome = tool 'nodejs24.1.0'  // nodejs installation name
+
+    // Add JDK and NodeJS to PATH env variable
+    env.PATH = "${jdkHome}/bin:${nodeHome}/bin:${env.PATH}"
+
+    sh 'npm install'
   }
 
   stage('ExecuteSonarQubeReport') {
-    tools {
-      jdk 'jdk17'
-      nodejs 'nodejs24.1.0'
-    }
-    nodejs(nodeJSInstallationName: 'nodejs24.1.0') {
-      sh 'npm run sonar'
-    }
+    def jdkHome = tool 'jdk17'
+    def nodeHome = tool 'nodejs24.1.0'
+    env.PATH = "${jdkHome}/bin:${nodeHome}/bin:${env.PATH}"
+
+    sh 'npm run sonar'
   }
 
   stage('UploadintoNexus') {
-    tools {
-      jdk 'jdk17'
-      nodejs 'nodejs24.1.0'
-    }
-    nodejs(nodeJSInstallationName: 'nodejs24.1.0') {
-      sh 'npm publish'
-    }
+    def jdkHome = tool 'jdk17'
+    def nodeHome = tool 'nodejs24.1.0'
+    env.PATH = "${jdkHome}/bin:${nodeHome}/bin:${env.PATH}"
+
+    sh 'npm publish'
   }
 
   stage('RunNodeJsApp') {
-    tools {
-      jdk 'jdk17'
-      nodejs 'nodejs24.1.0'
-    }
-    nodejs(nodeJSInstallationName: 'nodejs24.1.0') {
-      sh 'npm start &'
-    }
+    def jdkHome = tool 'jdk17'
+    def nodeHome = tool 'nodejs24.1.0'
+    env.PATH = "${jdkHome}/bin:${nodeHome}/bin:${env.PATH}"
+
+    sh 'npm start &'
   }
 }
