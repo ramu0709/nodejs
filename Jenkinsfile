@@ -3,15 +3,18 @@ pipeline {
 
   tools {
     nodejs 'nodejs24.1.0'
+    sonarScanner 'sonar-scanner'
   }
 
   environment {
     PATH = "${tool 'nodejs24.1.0'}/bin:${env.PATH}"
+    JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"
+    PATH = "${JAVA_HOME}/bin:${env.PATH}"
   }
 
   stages {
 
-    stage("CheckOutCodeGit") {
+    stage("Checkout Code") {
       steps {
         git branch: 'main', credentialsId: '9c54f3a6-d28e-4f8f-97a3-c8e939dcc8ff', url: 'https://github.com/ramu0709/nodejs.git'
       }
@@ -23,26 +26,21 @@ pipeline {
       }
     }
 
-    stage('ExecuteSonarQubeReport') {
+    stage('SonarQube Analysis') {
       steps {
-        // Use Java 17 explicitly for SonarScanner
-        withEnv([
-          "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64",
-          "PATH=/usr/lib/jvm/java-17-openjdk-amd64/bin:${env.PATH}"
-        ]) {
-          sh 'java -version'  // verify Java 17 usage
-          sh 'npm run sonar'
+        withSonarQubeEnv('MySonarQubeServer') {
+          sh 'sonar-scanner'
         }
       }
     }
 
-    stage('UploadintoNexus') {
+    stage('Publish to Nexus') {
       steps {
         sh 'npm publish'
       }
     }
 
-    stage('RunNodeJsApp') {
+    stage('Run Node.js App') {
       steps {
         sh 'npm start &'
       }
