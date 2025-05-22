@@ -6,9 +6,8 @@ pipeline {
   }
 
   environment {
-    PATH = "${tool 'nodejs24.1.0'}/bin:${env.PATH}"
     JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"
-    PATH = "${JAVA_HOME}/bin:${env.PATH}"
+    PATH = "${tool 'nodejs24.1.0'}/bin:${JAVA_HOME}/bin:${env.PATH}"
   }
 
   stages {
@@ -27,10 +26,7 @@ pipeline {
 
     stage('ExecuteSonarQubeReport') {
       steps {
-        // Confirm java version for debugging
-        sh 'java -version'
-
-        // Run sonar command
+        sh 'java -version'   // to check java version in logs
         sh 'npm run sonar'
       }
     }
