@@ -2,7 +2,7 @@ const sonarqubeScanner = require('sonarqube-scanner');
 
 sonarqubeScanner(
   {
-    serverUrl: 'http://172.21.40.70:9000/',  // Your SonarQube server URL
+    serverUrl: 'http://172.21.40.70:9000/',
     options: {
       'sonar.projectKey': 'NodeJsRamu',
       'sonar.projectName': 'Node JS Application - Sample',
@@ -11,11 +11,8 @@ sonarqubeScanner(
       'sonar.login': 'squ_e49c6d5fadc72205f815c326baab998ba80932f5',
       'sonar.language': 'js',
       'sonar.sourceEncoding': 'UTF-8',
-      'sonar.sources': '.', // root directory of your Node.js project
-      // Uncomment if you have tests
-      // 'sonar.tests': 'test',
-      // 'sonar.test.inclusions': '**/*.test.js',
-      'sonar.javascript.lcov.reportPaths': 'coverage/lcov.info' // If you generate test coverage
+      'sonar.sources': '.',
+      'sonar.javascript.lcov.reportPaths': 'coverage/lcov.info'
     },
   },
   () => {
